@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Login {% endblock %}
+
+{% block content %}
+<div style="max-width:420px;margin:80px auto">
+  <div class="panel">
+    <p class="eyebrow">Welcome back</p>
+    <h2 style="margin-top:4px;margin-bottom:20px">Sign in to your account</h2>
+
+    {% if error %}
+    <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
+
+    <form method="post">
+      <div class="form-stack">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username"
+               value="{{ username or '' }}" required autofocus />
+      </div>
+      <div class="form-stack">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required />
+      </div>
+      <button type="submit" style="width:100%">Sign In</button>
+    </form>
+
+    <p style="margin-top:18px;text-align:center" class="muted">
+      No account? <a href="/register" style="color:var(--text);font-weight:700">Register</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

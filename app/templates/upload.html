@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Upload{% endblock %}
+
+{% block content %}
+<div class="page-title">
+  <p class="eyebrow">Ingest</p>
+  <h1>Upload Document</h1>
+  <p class="lead">Supported formats: PDF, TXT, MD</p>
+</div>
+
+{% if message %}
+<div class="alert alert-success">{{ message }}</div>
+{% endif %}
+
+{% if error %}
+<div class="alert alert-error">{{ error }}</div>
+{% endif %}
+
+{% if result %}
+<div class="panel" style="margin-bottom:24px">
+  <h2>Indexed Successfully</h2>
+  <div class="key-values">
+    <div><span>Doc ID</span>{{ result.doc_id }}</div>
+    <div><span>Title</span>{{ result.title }}</div>
+    <div><span>Category</span>{{ result.category }}</div>
+    <div><span>Namespace</span>{{ result.namespace }}</div>
+    <div><span>File</span>{{ result.source_file }}</div>
+    <div><span>Chunks</span>{{ result.chunk_count }}</div>
+  </div>
+</div>
+{% endif %}
+
+<div class="panel narrow">
+  <h2>New Document</h2>
+  <form method="post" enctype="multipart/form-data">
+    <div class="form-stack">
+      <label for="file">File</label>
+      <input type="file" id="file" name="file" accept=".pdf,.txt,.md,.markdown" required />
+    </div>
+    <div class="form-stack">
+      <label for="title">Title</label>
+      <input type="text" id="title" name="title" required placeholder="e.g. Q3 Earnings Report" />
+    </div>
+    <div class="form-stack">
+      <label for="category">Category</label>
+      <input type="text" id="category" name="category" placeholder="e.g. finance"
+             list="category-list" />
+      <datalist id="category-list">
+        {% for c in categories %}<option value="{{ c }}">{% endfor %}
+      </datalist>
+    </div>
+    <div class="form-stack">
+      <label for="namespace">Namespace</label>
+      <input type="text" id="namespace" name="namespace" placeholder="demo"
+             list="ns-list" />
+      <datalist id="ns-list">
+        {% for ns in namespaces %}<option value="{{ ns }}">{% endfor %}
+      </datalist>
+    </div>
+    <button type="submit">Upload &amp; Index</button>
+  </form>
+</div>
+{% endblock %}

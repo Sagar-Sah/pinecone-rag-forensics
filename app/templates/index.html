@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Dashboard {% endblock %}
+
+{% block content %}
+<div class="hero">
+  <div>
+    <p class="eyebrow">Pinecone RAG Forensics Lab</p>
+    <h1>Document Intelligence</h1>
+    <p class="lead">Upload documents, query them with GPT-4o-mini, and run evals to measure retrieval quality.</p>
+    <div class="hero-actions">
+      <a href="/upload" class="button">Upload Document</a>
+      <a href="/ask" class="button button-secondary">Ask a Question</a>
+    </div>
+  </div>
+</div>
+
+<div class="grid grid-3">
+  <div class="metric-card">
+    <span class="metric-label">Documents</span>
+    <strong>{{ document_count }}</strong>
+  </div>
+  <div class="metric-card">
+    <span class="metric-label">Chunks Indexed</span>
+    <strong>{{ chunk_count }}</strong>
+  </div>
+  <div class="metric-card">
+    <span class="metric-label">Namespaces</span>
+    <strong>{{ namespaces | length }}</strong>
+  </div>
+</div>
+
+<div class="grid grid-2">
+  <div class="panel">
+    <div class="panel-header">
+      <h2>Recent Documents</h2>
+      <a href="/upload" class="button">+ Upload</a>
+    </div>
+    {% if documents %}
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Category</th>
+          <th>Namespace</th>
+          <th>Chunks</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for doc in documents %}
+        <tr>
+          <td>{{ doc.title }}</td>
+          <td><span class="pill">{{ doc.category }}</span></td>
+          <td class="muted">{{ doc.namespace }}</td>
+          <td class="muted">{{ doc.chunk_count }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="muted">No documents yet. <a href="/upload">Upload one</a> to get started.</p>
+    {% endif %}
+  </div>
+
+  <div class="panel">
+    <h2>Pinecone Index Stats</h2>
+    {% if pinecone_stats.error is defined %}
+    <p class="muted">{{ pinecone_stats.error }}</p>
+    {% else %}
+    <div class="key-values">
+      {% for key, val in pinecone_stats.items() %}
+      <div><span>{{ key }}</span>{{ val }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

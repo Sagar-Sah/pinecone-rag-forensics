@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Ask | Pinecone RAG Forensics Lab{% endblock %}
+
+{% block content %}
+
+<div class="page-title">
+  <p class="eyebrow">Retrieval trace</p>
+
+  <h1>Ask your indexed documents</h1>
+
+  <p class="lead">
+    Every answer includes the source chunks, similarity scores, and metadata Pinecone returned.
+  </p>
+</div>
+
+<section class="layout-ask">
+  <div class="panel">
+    <form method="post" action="/ask" class="form-stack">
+      <label>Question</label>
+
+      <textarea
+        name="question"
+        rows="5"
+        placeholder="What does the document say about commission?"
+        required
+      >{{ question or "" }}</textarea>
+
+      <div class="grid grid-3 no-margin">
+        <div>
+          <label>Namespace</label>
+
+          <input
+            type="text"
+            name="namespace"
+            list="namespace-list"
+            value="{{ namespace or 'demo' }}"
+            required
+          >
+
+          <datalist id="namespace-list">
+            {% for item in namespaces %}
+              <option value="{{ item }}"></option>
+            {% endfor %}
+          </datalist>
+        </div>
+
+        <div>
+          <label>Category Filter</label>
+
+          <input
+            type="text"
+            name="category"
+            list="category-list"
+            value="{{ category or '' }}"
+            placeholder="optional"
+          >
+
+          <datalist id="category-list">
+            {% for item in categories %}
+              <option value="{{ item }}"></option>
+            {% endfor %}
+          </datalist>
+        </div>
+
+        <div>
+          <label>Top K</label>
+
+          <input
+            type="number"
+            name="top_k"
+            min="1"
+            max="20"
+            value="{{ top_k or 5 }}"
+          >
+        </div>
+      </div>
+
+      <button type="submit">Search and Answer</button>
+    </form>
+  </div>
+
+  {% if answer %}
+    <div class="panel answer-panel">
+      <div class="panel-header">
+        <h2>Answer</h2>
+        <span class="pill">{{ namespace }}</span>
+      </div>
+
+      <p>{{ answer }}</p>
+    </div>
+  {% endif %}
+</section>
+
+{% if matches %}
+<section class="panel">
+  <div class="panel-header">
+    <h2>Retrieval Trace</h2>
+    <span class="muted">Top {{ matches|length }} matches</span>
+  </div>
+
+  <div class="trace-list">
+    {% for match in matches %}
+      {% include "partials/chunk_card.html" %}
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% endblock %}

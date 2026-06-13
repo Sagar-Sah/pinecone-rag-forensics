@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Upload | Pinecone RAG Forensics Lab{% endblock %}
+
+{% block content %}
+
+<div class="page-title">
+  <p class="eyebrow">Document ingestion</p>
+
+  <h1>Upload and index a document</h1>
+
+  <p class="lead">
+    The backend parses the file, chunks the text, embeds each chunk, and upserts vectors into the selected Pinecone namespace.
+  </p>
+</div>
+
+<section class="panel narrow">
+  <form method="post" action="/upload" enctype="multipart/form-data" class="form-stack">
+    <label>Document Title</label>
+    <input type="text" name="title" placeholder="Print It Sales Training" required>
+
+    <label>Category</label>
+    <input type="text" name="category" list="category-list" placeholder="sales_training" required>
+
+    <datalist id="category-list">
+      {% for category in categories %}
+        <option value="{{ category }}"></option>
+      {% endfor %}
+    </datalist>
+
+    <label>Namespace</label>
+    <input type="text" name="namespace" list="namespace-list" value="demo" required>
+
+    <datalist id="namespace-list">
+      {% for namespace in namespaces %}
+        <option value="{{ namespace }}"></option>
+      {% endfor %}
+    </datalist>
+
+    <label>File</label>
+    <input type="file" name="file" accept=".pdf,.txt,.md,.markdown" required>
+
+    <button type="submit">Index Document</button>
+  </form>
+</section>
+
+{% if result %}
+<section class="panel narrow">
+  <h2>Ingestion Result</h2>
+
+  <div class="key-values">
+    <div>
+      <span>Doc ID</span>
+      <strong>{{ result.doc_id }}</strong>
+    </div>
+
+    <div>
+      <span>Namespace</span>
+      <strong>{{ result.namespace }}</strong>
+    </div>
+
+    <div>
+      <span>Category</span>
+      <strong>{{ result.category }}</strong>
+    </div>
+
+    <div>
+      <span>Chunks</span>
+      <strong>{{ result.chunk_count }}</strong>
+    </div>
+
+    <div>
+      <span>Source File</span>
+      <strong>{{ result.source_file }}</strong>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% endblock %}

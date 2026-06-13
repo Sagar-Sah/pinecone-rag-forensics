@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Eval{% endblock %}
+
+{% block content %}
+<div class="page-title">
+  <p class="eyebrow">Quality</p>
+  <h1>Eval Cases</h1>
+  <p class="lead">Define expected sources and terms, then run the suite to measure retrieval accuracy.</p>
+</div>
+
+{% if results is defined %}
+<div class="panel" style="margin-bottom:24px">
+  <h2>Run Results</h2>
+  <div class="score-box">
+    <span>Passed / Total</span>
+    <strong>{{ passed }} / {{ total }}</strong>
+  </div>
+  <div class="trace-list" style="margin-top:20px">
+    {% for r in results %}
+    <div class="eval-result {{ 'pass' if r.passed else 'fail' }}">
+      <h3>
+        {% if r.passed %}&#10003;{% else %}&#10007;{% endif %}
+        {{ r.case.question }}
+      </h3>
+      {% if r.error %}
+      <p class="muted">Error: {{ r.error }}</p>
+      {% else %}
+      <p><strong>Answer:</strong> {{ r.answer }}</p>
+      <div class="metadata-row">
+        <span class="pill">source found: {{ r.source_found }}</span>
+        {% for t in r.terms_found %}<span class="pill" style="background:#d1fae5;color:#065f46">{{ t }}</span>{% endfor %}
+        {% for t in r.terms_missing %}<span class="pill" style="background:#fee2e2;color:#991b1b">{{ t }}</span>{% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<div class="grid grid-2">
+  <div class="panel">
+    <h2>Add Eval Case</h2>
+    <form method="post" action="/eval/add">
+      <div class="form-stack">
+        <label>Question</label>
+        <textarea name="question" rows="2" required placeholder="What is the refund policy?"></textarea>
+      </div>
+      <div class="form-stack">
+        <label>Expected Source <span class="muted">(filename or title fragment)</span></label>
+        <input type="text" name="expected_source" required placeholder="policy.pdf" />
+      </div>
+      <div class="form-stack">
+        <label>Expected Terms <span class="muted">(one per line)</span></label>
+        <textarea name="expected_terms" rows="3" placeholder="30 days&#10;full refund"></textarea>
+      </div>
+      <div class="grid grid-2 no-margin" style="gap:12px">
+        <div class="form-stack">
+          <label>Namespace</label>
+          <select name="namespace">
+            {% for ns in namespaces %}
+            <option value="{{ ns }}">{{ ns }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-stack">
+          <label>Category <span class="muted">(optional)</span></label>
+          <select name="category">
+            <option value="">All</option>
+            {% for c in categories %}
+            <option value="{{ c }}">{{ c }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <button type="submit">Add Case</button>
+    </form>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h2>Cases ({{ cases | length }})</h2>
+      <form method="post" action="/eval/run">
+        <div class="form-inline">
+          <div class="form-stack" style="width:90px;margin-bottom:0">
+            <label>Top K</label>
+            <input type="number" name="top_k" value="5" min="1" max="20" />
+          </div>
+          <button type="submit">Run All</button>
+        </div>
+      </form>
+    </div>
+    {% if cases %}
+    <table>
+      <thead>
+        <tr>
+          <th>Question</th>
+          <th>Expected Source</th>
+          <th>Namespace</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in cases %}
+        <tr>
+          <td>{{ c.question }}</td>
+          <td class="muted">{{ c.expected_source }}</td>
+          <td class="muted">{{ c.namespace }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="muted">No eval cases yet. Add one to get started.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

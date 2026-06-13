@@ -1,0 +1,11 @@
+fastapi>=0.115.0
+uvicorn[standard]>=0.34.0
+jinja2>=3.1.4
+python-multipart>=0.0.20
+pinecone>=7.0.0
+openai>=1.90.0
+pypdf>=5.0.0
+python-dotenv>=1.0.1
+sqlalchemy>=2.0.35
+bcrypt>=4.0.0,<5
+python-jose[cryptography]>=3.3.0

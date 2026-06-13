@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | Pinecone RAG Forensics Lab{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+  <div>
+    <p class="eyebrow">Production-style vector search demo</p>
+
+    <h1>Inspect the full RAG pipeline.</h1>
+
+    <p class="lead">
+      Upload docs, index chunks in Pinecone, ask questions, and see the exact retrieval trace behind every answer.
+    </p>
+  </div>
+
+  <div class="hero-actions">
+    <a class="button" href="/upload">Upload Document</a>
+    <a class="button button-secondary" href="/ask">Ask Question</a>
+  </div>
+</section>
+
+<section class="grid grid-3">
+  <div class="metric-card">
+    <span class="metric-label">Documents</span>
+    <strong>{{ document_count }}</strong>
+  </div>
+
+  <div class="metric-card">
+    <span class="metric-label">Chunks</span>
+    <strong>{{ chunk_count }}</strong>
+  </div>
+
+  <div class="metric-card">
+    <span class="metric-label">Namespaces</span>
+    <strong>{{ namespaces|length }}</strong>
+  </div>
+</section>
+
+<section class="grid grid-2">
+  <div class="panel">
+    <div class="panel-header">
+      <h2>Recent Documents</h2>
+      <a href="/upload">Add</a>
+    </div>
+
+    {% if documents %}
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Namespace</th>
+            <th>Chunks</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for doc in documents %}
+            <tr>
+              <td>{{ doc.title }}</td>
+              <td><span class="pill">{{ doc.category }}</span></td>
+              <td>{{ doc.namespace }}</td>
+              <td>{{ doc.chunk_count }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="muted">No documents indexed yet.</p>
+    {% endif %}
+  </div>
+
+  <div class="panel">
+    <h2>Pinecone Stats</h2>
+
+    {% if pinecone_stats.error %}
+      <p class="muted">{{ pinecone_stats.error }}</p>
+    {% else %}
+      <pre>{{ pinecone_stats }}</pre>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}

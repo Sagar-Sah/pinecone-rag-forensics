@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>{% block title %}Pinecone RAG Forensics Lab{% endblock %}</title>
+
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">◆</span>
+      <span>Pinecone RAG Forensics Lab</span>
+    </div>
+
+    <nav>
+      <a href="/">Dashboard</a>
+      <a href="/upload">Upload</a>
+      <a href="/ask">Ask</a>
+      <a href="/eval">Eval</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    {% if error %}
+      <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
+
+    {% if message %}
+      <div class="alert alert-success">{{ message }}</div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

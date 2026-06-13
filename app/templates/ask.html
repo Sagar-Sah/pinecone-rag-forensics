@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Ask {% endblock %}
+
+{% block content %}
+<div class="page-title">
+  <p class="eyebrow">Retrieval</p>
+  <h1>Ask a Question</h1>
+</div>
+
+{% if error %}
+<div class="alert alert-error">{{ error }}</div>
+{% endif %}
+
+<div class="layout-ask">
+  <div>
+    <div class="panel" style="margin-bottom:20px">
+      <form method="post">
+        <div class="form-stack">
+          <label for="question">Question</label>
+          <textarea id="question" name="question" rows="3" required
+                    placeholder="What does the document say about...">{{ question or "" }}</textarea>
+        </div>
+        <div class="grid grid-2 no-margin" style="gap:12px">
+          <div class="form-stack">
+            <label for="namespace">Namespace</label>
+            <select id="namespace" name="namespace">
+              {% for ns in namespaces %}
+              <option value="{{ ns }}" {% if ns == namespace %}selected{% endif %}>{{ ns }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-stack">
+            <label for="category">Category <span class="muted">(optional)</span></label>
+            <select id="category" name="category">
+              <option value="">All categories</option>
+              {% for c in categories %}
+              <option value="{{ c }}" {% if c == category %}selected{% endif %}>{{ c }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="form-inline">
+          <div class="form-stack" style="width:120px">
+            <label for="top_k">Top K</label>
+            <input type="number" id="top_k" name="top_k" min="1" max="20"
+                   value="{{ top_k or 5 }}" />
+          </div>
+          <button type="submit">Ask</button>
+        </div>
+      </form>
+    </div>
+
+    {% if answer %}
+    <div class="panel answer-panel">
+      <h2>Answer</h2>
+      <p>{{ answer }}</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <div>
+    {% if matches %}
+    <div class="panel">
+      <h2>Retrieved Chunks <span class="muted" style="font-size:14px">({{ matches|length }})</span></h2>
+      <div class="trace-list">
+        {% for m in matches %}
+        <div class="chunk-card">
+          <div class="chunk-topline">
+            <div>
+              <strong>{{ m.metadata.title }}</strong>
+              <span class="muted" style="font-size:13px"> — {{ m.metadata.source_file }}</span>
+            </div>
+            <span class="score">{{ "%.3f"|format(m.score) }}</span>
+          </div>
+          <div class="metadata-row">
+            <span class="pill">chunk {{ m.metadata.chunk_index }}</span>
+            {% if m.metadata.page_number %}<span class="pill">page {{ m.metadata.page_number }}</span>{% endif %}
+            {% if m.metadata.category %}<span class="pill">{{ m.metadata.category }}</span>{% endif %}
+          </div>
+          <pre>{{ m.metadata.text }}</pre>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

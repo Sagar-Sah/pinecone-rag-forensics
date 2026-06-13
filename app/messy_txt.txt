@@ -1,0 +1,22 @@
+Hello,\x00\x00    this      is	a	   messy      text.
+
+
+It contains    multiple        spaces,		tabs,
+
+
+and even some null bytes:\x00\x00\x00 right here.
+
+
+
+
+
+
+There are also excessive newlines.
+
+
+
+
+Another    line	with			inconsistent     spacing.
+
+
+\x00	End of    test.     

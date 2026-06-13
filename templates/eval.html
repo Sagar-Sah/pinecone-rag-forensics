@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Eval | Pinecone RAG Forensics Lab{% endblock %}
+
+{% block content %}
+
+<div class="page-title">
+  <p class="eyebrow">Retrieval evaluation</p>
+
+  <h1>Test if Pinecone finds the right source</h1>
+
+  <p class="lead">
+    Add expected source files and terms, then run a basic retrieval-quality test.
+  </p>
+</div>
+
+<section class="grid grid-2">
+  <div class="panel">
+    <h2>Add Eval Case</h2>
+
+    <form method="post" action="/eval/add" class="form-stack">
+      <label>Question</label>
+      <textarea name="question" rows="4" required></textarea>
+
+      <label>Expected Source Filename</label>
+      <input type="text" name="expected_source" placeholder="commission-plan.pdf" required>
+
+      <label>Expected Terms, one per line</label>
+      <textarea name="expected_terms" rows="4" placeholder="33%&#10;gross profit"></textarea>
+
+      <div class="grid grid-2 no-margin">
+        <div>
+          <label>Namespace</label>
+          <input type="text" name="namespace" value="demo" list="namespace-list">
+        </div>
+
+        <div>
+          <label>Category Filter</label>
+          <input type="text" name="category" placeholder="optional" list="category-list">
+        </div>
+      </div>
+
+      <datalist id="namespace-list">
+        {% for item in namespaces %}
+          <option value="{{ item }}"></option>
+        {% endfor %}
+      </datalist>
+
+      <datalist id="category-list">
+        {% for item in categories %}
+          <option value="{{ item }}"></option>
+        {% endfor %}
+      </datalist>
+
+      <button type="submit">Add Eval</button>
+    </form>
+  </div>
+
+  <div class="panel">
+    <h2>Run Evals</h2>
+
+    <p class="muted">
+      This checks whether the expected source appears in Pinecone's top results and whether the generated answer includes your required terms.
+    </p>
+
+    <form method="post" action="/eval/run" class="form-inline">
+      <label>Top K</label>
+      <input type="number" name="top_k" value="5" min="1" max="20">
+
+      <button type="submit">Run All</button>
+    </form>
+
+    {% if total is defined %}
+      <div class="score-box">
+        <span>Passed</span>
+        <strong>{{ passed }} / {{ total }}</strong>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel-header">
+    <h2>Eval Cases</h2>
+    <span class="muted">{{ cases|length }} total</span>
+  </div>
+
+  {% if cases %}
+    <table>
+      <thead>
+        <tr>
+          <th>Question</th>
+          <th>Expected Source</th>
+          <th>Namespace</th>
+          <th>Category</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for case in cases %}
+          <tr>
+            <td>{{ case.question }}</td>
+            <td>{{ case.expected_source }}</td>
+            <td>{{ case.namespace }}</td>
+            <td>{{ case.category or '-' }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="muted">No eval cases yet.</p>
+  {% endif %}
+</section>
+
+{% if results %}
+<section class="panel">
+  <h2>Eval Results</h2>
+
+  {% for item in results %}
+    <div class="eval-result {% if item.passed %}pass{% else %}fail{% endif %}">
+      <div class="panel-header">
+        <h3>{{ item.case.question }}</h3>
+
+        <span class="pill">
+          {% if item.passed %}
+            PASS
+          {% else %}
+            FAIL
+          {% endif %}
+        </span>
+      </div>
+
+      <p><strong>Expected source:</strong> {{ item.case.expected_source }}</p>
+      <p><strong>Source in top 3:</strong> {{ item.source_in_top_3 }}</p>
+      <p><strong>Source in top 5:</strong> {{ item.source_in_top_5 }}</p>
+      <p><strong>Terms found:</strong> {{ item.terms_found|join(', ') or '-' }}</p>
+      <p><strong>Terms missing:</strong> {{ item.terms_missing|join(', ') or '-' }}</p>
+
+      <details>
+        <summary>Generated answer</summary>
+        <p>{{ item.answer }}</p>
+      </details>
+    </div>
+  {% endfor %}
+</section>
+{% endif %}
+
+{% endblock %}
