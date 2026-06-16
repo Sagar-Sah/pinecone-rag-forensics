@@ -160,14 +160,14 @@ Define expected sources and keyword terms, then click **Run All** to get a pass/
 - An [OpenAI API key](https://platform.openai.com/api-keys)
 - A [Pinecone API key](https://app.pinecone.io/) (free Serverless tier works)
 
-### 1 — Clone the repo
+### 1  Clone the repo
 
 ```bash
 git clone https://github.com/Sagar-Sah/pinecone_rag_forensics.git
 cd pinecone_rag_forensics
 ```
 
-### 2 — Create a virtual environment
+### 2  Create a virtual environment
 
 ```bash
 python -m venv venv
@@ -179,13 +179,13 @@ venv\Scripts\activate
 source venv/bin/activate
 ```
 
-### 3 — Install dependencies
+### 3  Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4 — Configure environment variables
+### 4  Configure environment variables
 
 Copy the example and fill in your keys:
 
@@ -207,7 +207,7 @@ SECRET_KEY=your-long-random-secret-key-here
 > python -c "import secrets; print(secrets.token_hex(32))"
 > ```
 
-### 5 — Run the server
+### 5  Run the server
 
 ```bash
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
